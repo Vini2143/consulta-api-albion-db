@@ -1,29 +1,43 @@
 const https = require('https')
 
-let url = 'https://west.albion-online-data.com'
+function consultar(item){
+    return new Promise((resolve) => {
 
-let item = 'T4_HIDE_LEVEL3@3'
+        //let item = 'T4_HIDE_LEVEL3@3'
 
-let parametros  = `/api/v2/stats/Prices/${item}.json`
+        https.get(`https://west.albion-online-data.com/api/v2/stats/Prices/${item}.json`, (resposta) => {
+        let data = ''
 
-https.get(url + parametros, (resp) => {
-  let data = '';
+        // Um bloco de dados foi recebido.
+        resposta.on('data', (chunk) => {
+            data += chunk
+        })
 
-  // Um bloco de dados foi recebido.
-  resp.on('data', (chunk) => {
-    data += chunk;
-  });
+        // Toda a resposta foi recebida. Exibir o resultado.
+        resposta.on('end', () => {
 
-  // Toda a resposta foi recebida. Exibir o resultado.
-  resp.on('end', () => {
-    dataJson = JSON.parse(data)
+            dataJson = JSON.parse(data)
 
-    dataJson.forEach((atributo) => {
-        console.log(`${atributo['city']} ${atributo['sell_price_min']} ${atributo['sell_price_max']}`)
+            resolve(dataJson)
+
+        //    dataJson.forEach((consulta) => {
+        //        console.log(`${consulta['city']} ${consulta['sell_price_min']} ${consulta['sell_price_max']}`)
+        //    })    
+        })
+
+        }).on("error", (err) => {
+        console.log("Error: " + err.message)
+        })
+
+
     })
+}
 
-  });
+async function exibirConsulta(item){
+    let consultas = await consultar(item)
+    consultas.forEach(consulta => {
+        console.log(`${consulta['city']} ${consulta['sell_price_min']} ${consulta['sell_price_max']}`)
+    })
+}
 
-}).on("error", (err) => {
-  console.log("Error: " + err.message);
-});
+exibirConsulta('T4_HIDE_LEVEL3@3')
