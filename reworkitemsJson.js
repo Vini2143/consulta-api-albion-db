@@ -10,7 +10,7 @@ json.forEach(registro => {
         let item = {
             Nome: registro['LocalizedNames']['PT-BR'],
             Codigo: registro['UniqueName']
-        };
+        }
 
         items.push(item)
     } catch {
@@ -19,7 +19,7 @@ json.forEach(registro => {
     
 })
 
-let itemsJson = JSON.stringify(items, null, 2);
+let itemsJson = JSON.stringify(items, null, 2)
 
 fs.writeFileSync('itemsRecriado.json', itemsJson, 'utf8')
 
