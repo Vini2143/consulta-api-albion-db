@@ -19,9 +19,9 @@ function consultar(item) {
         
             })
     
-            }).on("error", (err) => {
+        }).on("error", (err) => {
             console.log("Error: " + err.message)
-            }) 
+        }) 
 
 
 /*         let request = new XMLHttpRequest()
