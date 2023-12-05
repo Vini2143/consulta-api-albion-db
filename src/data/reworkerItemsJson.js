@@ -1,6 +1,6 @@
-const fs = require('fs')
-
-let json = JSON.parse(fs.readFileSync('./src/data/items.json', 'utf-8'))
+import { readFileSync, writeFileSync } from 'fs'
+ 
+let json = JSON.parse(readFileSync('./src/data/items.json', 'utf-8'))
 
 let itens = []
 
@@ -21,5 +21,5 @@ json.forEach(registro => {
 
 let itensJson = JSON.stringify(itens, null, 2)
 
-fs.writeFileSync('./src/data/itemsReworked.json', itensJson, 'utf8')
+writeFileSync('./src/data/itemsReworked.json', itensJson, 'utf-8')
 
