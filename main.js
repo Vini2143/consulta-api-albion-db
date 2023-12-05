@@ -3,8 +3,6 @@ const https = require('https')
 function consultar(item){
     return new Promise((resolve) => {
 
-        //let item = 'T4_HIDE_LEVEL3@3'
-
         https.get(`https://west.albion-online-data.com/api/v2/stats/Prices/${item}.json`, (resposta) => {
         let data = ''
 
