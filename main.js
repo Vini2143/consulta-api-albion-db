@@ -1,10 +1,12 @@
 import { get } from "https"
 import { readFileSync } from "fs"
 
-function consultar(item) {
+function consultar(codigoItem, cidade = false) {
     return new Promise((resolve) => {
 
-        get(`https://west.albion-online-data.com/api/v2/stats/Prices/${item}.json`, (resposta) => {
+        get(cidade ? 
+            `https://west.albion-online-data.com/api/v2/stats/Prices/${codigoItem}.json?locations=${encodeURIComponent(cidade)}` :
+            `https://west.albion-online-data.com/api/v2/stats/Prices/${codigoItem}.json`, (resposta) => {
             let data = ''
     
             resposta.on('data', (chunk) => {
@@ -22,7 +24,6 @@ function consultar(item) {
         }).on("error", (err) => {
             console.log("Error: " + err.message)
         }) 
-
 
 /*         let request = new XMLHttpRequest()
 
@@ -61,19 +62,32 @@ function searchItem(busca) {
 
 }
 
-async function exibirConsulta(item) {
+async function exibirConsulta(item, cidade) {
 
     let resultado = searchItem(item)
+    let qualidades = ['Normal', 'Bom', 'Excepcional', 'Excelente', 'Obra-prima']
+
+    let data =  new Date().setMinutes(new Date().getMinutes() - 10)
 
     resultado.forEach(async item => {
-        let consultas = await consultar(item['Código'])
-
-        console.log(item['Nome'])
+        let consultas = await consultar(item['Código'], cidade)
 
         consultas.forEach(consulta => {
-            console.log(`${consulta['city']} ${consulta['sell_price_min']} ${consulta['sell_price_max']}`)
+
+            if (//consulta['sell_price_min'] != 0 && 
+                //consulta['sell_price_max'] != 0 &&
+                //new Date(consulta['sell_price_min_date']) > data &&
+                //new Date(consulta['sell_price_max_date']) > data &&
+                //consulta['buy_price_min'] != data &&
+                //consulta['buy_price_max'] != data &&
+                new Date(consulta['buy_price_min_date']) > data &&
+                new Date(consulta['buy_price_max_date']) > data
+                ) {
+                console.log(`${item['Nome']} ${qualidades[consulta['quality'] - 1]} - ${consulta['city']} - ${consulta['buy_price_max']}`)
+                //console.log(consulta)
+            }
         })
     })
 }
 
-exibirConsulta('Capa aval')
+exibirConsulta('Capa aval', 'Black Market')
