@@ -1,7 +1,7 @@
 import { get } from "https"
 import { readFileSync } from "fs"
 
-function consultar(codigoItem, cidade = false) {
+function consultar(codigoItem, cidade) {
     return new Promise((resolve) => {
 
         get(cidade ? 
@@ -62,37 +62,29 @@ function searchItem(busca) {
 
 }
 
-function exibirConsulta(item, cidade) {
+function exibirConsulta(item, cidade = false, intervalo = 60) {
 
     let resultado = searchItem(item)
     let qualidades = ['Normal', 'Bom', 'Excepcional', 'Excelente', 'Obra-prima']
 
     let data = new Date()
-    data.setMinutes(new Date().getMinutes() + 180 - 30) //arrumando utc e voltando 30 min no passado
-
-    console.log(data)
+    data.setMinutes(data.getMinutes() - intervalo)
  
     resultado.forEach(async item => {
         let consultas = await consultar(item['Código'], cidade)
 
         consultas.forEach(consulta => {
 
-            if (//consulta['sell_price_min'] != 0 && 
-                //consulta['sell_price_max'] != 0 &&
-                //new Date(consulta['sell_price_min_date']) > data &&
+            if (//new Date(consulta['sell_price_min_date']) > data &&
                 //new Date(consulta['sell_price_max_date']) > data &&
-                //consulta['buy_price_min'] != data &&
-                //consulta['buy_price_max'] != data &&
-                new Date(consulta['buy_price_min_date']) >= data &&
-                new Date(consulta['buy_price_max_date']) >= data
+                new Date(consulta['buy_price_min_date']+'.000+00:00') >= data &&
+                new Date(consulta['buy_price_max_date']+'.000+00:00') >= data
                 ) {
                 console.log(`${item['Nome']} ${qualidades[consulta['quality'] - 1]} - ${consulta['city']} - ${consulta['buy_price_max']}`)
-                let data1 = new Date(consulta['buy_price_max_date']) 
-                console.log(data1)
-                //console.log(consulta)
+
             }
         })
     })
 }
 
-exibirConsulta('Capa aval', 'Black Market')
+exibirConsulta('Capa aval', 'Black Market', 60)
